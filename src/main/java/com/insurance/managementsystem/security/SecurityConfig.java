@@ -23,17 +23,27 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf().disable()
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/auth/register").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/error").permitAll()
                         .anyRequest().authenticated()
                 );
         return http.build();
     }
+//
+//    @Bean
+//    public AuthenticationManager authManager(HttpSecurity http, PasswordEncoder passwordEncoder, UserDetailsServiceImpl userDetailsService) throws Exception {
+//     return http.getSharedObject(AuthenticationManagerBuilder.class)
+//             .userDetailsService(userDetailsService)
+//             .passwordEncoder(passwordEncoder);
+//            return authenticationManagerBuilder.build();
 
     @Bean
     public AuthenticationManager authManager(HttpSecurity http, PasswordEncoder passwordEncoder, UserDetailsServiceImpl userDetailsService) throws Exception {
-     return http.getSharedObject(AuthenticationManagerBuilder.class)
-             .userDetailsService(userDetailsService)
-             .passwordEncoder(passwordEncoder)
-             .and().build();
+        AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
+        authenticationManagerBuilder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
+        return authenticationManagerBuilder.build();
     }
+
 }
+
