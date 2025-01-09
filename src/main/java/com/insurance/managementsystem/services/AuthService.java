@@ -15,11 +15,12 @@ import java.util.HashSet;
 @Service
 public class AuthService {
 
-    @Autowired
+
     private UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
 
+    @Autowired
     public AuthService(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
@@ -56,6 +57,11 @@ public class AuthService {
 
     public boolean authenticateUser(String username, String password) {
         User user = userRepository.findByUsername(username);
-        return user != null && passwordEncoder.matches(password, user.getPassword());
+        if (user == null) {
+            return false;
+        }
+
+        return passwordEncoder.matches(password, user.getPassword());
+//        return user != null && passwordEncoder.matches(password, user.getPassword());
     }
 }
