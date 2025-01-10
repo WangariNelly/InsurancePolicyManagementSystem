@@ -44,20 +44,27 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
+
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())
             );
+            System.out.println("Authentication successful for: " + loginRequest.getUsername());
 
             boolean isAuthenticated = authService.authenticateUser(loginRequest.getUsername(), loginRequest.getPassword());
+            System.out.println("Is Authenticated: " + isAuthenticated);
+
             if (isAuthenticated) {
                 String token = jwtUtil.generateToken(loginRequest.getUsername());
+                System.out.println("token: " + token);
                 return ResponseEntity.ok("Bearer " + token);
+
             } else {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Invalid credentials");
             }
 
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Invalid login");
         }
     }
